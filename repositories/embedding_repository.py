@@ -6,10 +6,11 @@ from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
+
 class EmbeddingRepository:
     def __init__(self, collection: Collection):
         """Initialize EmbeddingRepository
-        
+
         Args:
             collection (Collection): Milvus collection instance
         """
@@ -18,31 +19,29 @@ class EmbeddingRepository:
     @contextmanager
     def connect(self, host: str = "localhost", port: int = 19530):
         """Context manager for Milvus connection
-        
+
         Args:
             host: Milvus server host
             port: Milvus server port
         """
         try:
-            connections.connect(
-                alias="default", 
-                host=host, 
-                port=port
-            )
+            connections.connect(alias="default", host=host, port=port)
             yield
         finally:
             connections.disconnect("default")
 
-    def insert_chunks_batch(self, paper_id: int, embeddings_list: List[Tuple[int, str, str, np.ndarray]]) -> bool:
+    def insert_chunks_batch(
+        self, paper_id: int, embeddings_list: List[Tuple[int, str, str, np.ndarray]]
+    ) -> bool:
         """Batch insert paper chunks and their embeddings
-        
+
         Args:
             paper_id: Paper identifier
             embeddings_list: List of tuples containing (chunk_id, chunk_type, chunk_text, embedding)
-        
+
         Returns:
             bool: True if insertion successful, False otherwise
-        
+
         Raises:
             ValueError: If embeddings_list is malformed
         """
@@ -76,26 +75,25 @@ class EmbeddingRepository:
 
             insert_result = self.collection.insert(data)
             self.collection.flush()
-            
-            logger.info(f"Successfully inserted {len(embeddings_list)} chunks for paper {paper_id}")
+
+            logger.info(
+                f"Successfully inserted {len(embeddings_list)} chunks for paper {paper_id}"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Error inserting chunks for paper {paper_id}: {e}")
-            
+
     def search_similar_chunks(
-        self, 
-        query_embedding: np.ndarray, 
-        top_k: int = 5,
-        filter_expr: str = None
+        self, query_embedding: np.ndarray, top_k: int = 5, filter_expr: str = None
     ) -> List[dict]:
         """Search for similar chunks using vector similarity
-        
+
         Args:
             query_embedding: Query vector
             top_k: Number of results to return
             filter_expr: Optional filter expression
-            
+
         Returns:
             List of similar chunks with distances
         """
@@ -107,11 +105,11 @@ class EmbeddingRepository:
                 param=search_params,
                 limit=top_k,
                 expr=filter_expr,
-                output_fields=["paper_id", "chunk_id", "chunk_text"]
+                output_fields=["paper_id", "chunk_id", "chunk_text"],
             )
-            
+
             return results
-            
+
         except Exception as e:
             logger.error(f"Error during similarity search: {str(e)}")
             return []

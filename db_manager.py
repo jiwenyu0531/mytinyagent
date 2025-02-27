@@ -13,7 +13,9 @@ class DBManager:
         session factory, and a scoped session.
         """
         self.engine = create_engine(database_url, echo=True)
-        self.session_factory = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.session_factory = sessionmaker(
+            autocommit=False, autoflush=False, bind=self.engine
+        )
         self.Session = scoped_session(self.session_factory)
 
         connections.connect(alias="default", host="localhost", port="19530")
@@ -28,7 +30,7 @@ class DBManager:
             FieldSchema(name="chunk_type", dtype=DataType.VARCHAR, max_length=50),  # chunk 类型 (如 abstract, conclusion)
         ]
         schema = CollectionSchema(fields, description="Collection for paper embeddings")
-        
+
         self.vdb_collection = None
         if not utility.has_collection(collection_name):
             self.vdb_collection = Collection(name=collection_name, schema=schema)
@@ -36,7 +38,6 @@ class DBManager:
         else:
             self.vdb_collection = Collection(name=collection_name)
             print(f"Collection {collection_name} already exists.")
-
 
     def get_session(self):
         """

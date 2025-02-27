@@ -10,18 +10,19 @@ from .base_llm import BaseLLM
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class OllamaModel(BaseLLM):
     def __init__(
         self,
         base_url: str = "http://localhost:11434",
-        model_name: str = "deepseek-r1:7b",
-        ebedding_model_name: str = "nomic-embed-text",
+        model_name: str = "DeepSeek-R1-Distill-Qwen-14B:Q6_K_L",
+        ebedding_model_name: str = "nomic-embed-text-v1:Q6_K",
         user_role: str = "user",
         system_prompt: Optional[str] = None,
     ):
         """
         初始化 Ollama 模型接口。
-        
+
         :param base_url: Ollama 服务器地址。
         :param model_name: 模型名称。
         :param system_prompt: （可选）系统级提示词，用于设定模型行为。
@@ -40,14 +41,12 @@ class OllamaModel(BaseLLM):
         try:
             yield self.client
         finally:
-            if hasattr(self, 'client') and self.client:
+            if hasattr(self, "client") and self.client:
                 self.client.close()
                 logger.debug("Closed API connection")
-    
+
     def generate_response(
-        self,
-        prompt: str,
-        additional_messages: Optional[List[Dict[str, str]]] = None
+        self, prompt: str, additional_messages: Optional[List[Dict[str, str]]] = None
     ) -> str:
         """
         调用 Ollama API 生成响应。
@@ -69,7 +68,7 @@ class OllamaModel(BaseLLM):
         try:
             response = self.client.chat(
                 model=self.model_name,
-                messages=[{"role": self.user_role, "content": prompt}]
+                messages=[{"role": self.user_role, "content": prompt}],
             )
 
             logger.info(f"Response from Ollama model: {response}")
@@ -85,11 +84,11 @@ class OllamaModel(BaseLLM):
             return None
         except Exception as e:
             raise RuntimeError(f"Ollama Client 请求失败: {e}")
-    
+
     def generate_text_embedding(self, prompt):
         response = self.client.embeddings(model=self.bedding_model_name, prompt=prompt)
         return response.get("embedding", [])
-    
+
     def __del__(self):
         """Cleanup method to ensure resources are properly released"""
         try:

@@ -8,11 +8,13 @@ from .keyword_repository import KeywordRepository
 from .embedding_repository import EmbeddingRepository
 
 
-__all__ = ['PaperRepository', 
-           'AuthorRepository', 
-           'ConferenceRepository', 
-           'ConferenceInstanceRepository', 
-           'ReferenceRepository', 
-           'AffiliationRepository',
-           'KeywordRepository',
-           'EmbeddingRepository']
+__all__ = [
+    "PaperRepository",
+    "AuthorRepository",
+    "ConferenceRepository",
+    "ConferenceInstanceRepository",
+    "ReferenceRepository",
+    "AffiliationRepository",
+    "KeywordRepository",
+    "EmbeddingRepository",
+]

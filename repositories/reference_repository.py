@@ -1,5 +1,6 @@
 from models import Reference
 
+
 class ReferenceRepository:
     def __init__(self, session):
         self.session = session
